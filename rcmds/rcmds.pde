@@ -20,12 +20,12 @@ byte mode=0;
 byte numModes=2;
 String[] modeNames={"indiv", "cartesn"};
 
-float arm1Length=200.0;//pixels
-float arm2Length=arm1Length*4.5/6.75;//*3.6/5.5;//measured from prototype
+float arm1Length=100.0;//pixels
+float arm2Length=arm1Length*.8;
 
 float s1min=-90;
 float s1max=90;
-float s2min=0;
+float s2min=-180;
 float s2max=180;
 
 float x=1106;
@@ -45,7 +45,7 @@ void setup() {
   manual3Slider=new Slider(width*.65, height*.95, width*.5, width*.05, 1, -1, color(0, 0, 100), color(255), null, 'e', 'q', 0.02, 0, true, false);
 }
 void draw() {
-  background(0);
+  //background(0);
   enabled=enableSwitch.run(enabled);
   /////////////////////////////////////add UI here
 
@@ -96,7 +96,7 @@ void draw() {
     noStroke();
     fill(25);
     rectMode(CORNERS);
-    rect(width*.65-(arm1Length+arm2Length+50), height/2-(arm1Length+arm2Length+70), width*.65+(arm1Length+arm2Length+50), height/2+(70));
+    //rect(width*.65-(arm1Length+arm2Length+50), height/2-(arm1Length+arm2Length+70), width*.65+(arm1Length+arm2Length+50), height/2+(70));
     rectMode(CENTER);
 
     //change coordinates into more intuitive ones
@@ -118,7 +118,7 @@ void draw() {
     stroke(0, 100, 100);
 
     //draw c1
-    line(0, 0, 0, arm1Length);
+    //line(0, 0, 0, arm1Length);
 
     //move to location of second servo
     translate(0, arm1Length);
@@ -130,7 +130,7 @@ void draw() {
     stroke(100, 0, 100);
 
     //draw c2
-    line(0, 0, 0, arm2Length);
+    line(0, arm2Length, 0, arm2Length);
     popMatrix();
     popStyle();
     if (keyboardCtrl.isPressed('w'))
@@ -151,17 +151,17 @@ void draw() {
 
 float[] cartToAngles(float x, float y, float c1, float c2) {
   float[] ret=new float[2];
-  float s2=acos((-sq(x)-sq(y)+sq(c1)+sq(c2))/(2*c1*c2));
-  if (x<0) {
-    s2=-s2;
-  }
-  float s1=asin((c2*sin(s2))/sqrt(sq(x)+sq(y)))+atan(y/x)-PI/2;
-  if (x<0) {
-    s1=s1+PI;
-  }
-
-  ret[0]=s1;
-  ret[1]=s2;
+      float potential_theta2 = acos((-sq(x) - sq(y) + sq(c1) + sq(c2)) / (2 * c1 * c2));
+    if (x < 0) {
+        potential_theta2 = -potential_theta2;
+    }
+    float potential_theta1 = asin((c2 * sin(potential_theta2)) / sqrt(sq(x) + sq(y))) + atan(y / x) - PI / 2;
+    if (x < 0) {
+        potential_theta1 = potential_theta1 + PI;
+    }
+  
+  ret[0]=potential_theta1;
+  ret[1]=potential_theta2;
   return ret;
 }
 
